@@ -26,7 +26,7 @@ public class EstadoEntity {
 
     @Column(name="bandeira")
     @NotNull
-    private Blob bandeira;
+    private String bandeira;
 
     @Column(name="comboDefault")
     @NotNull

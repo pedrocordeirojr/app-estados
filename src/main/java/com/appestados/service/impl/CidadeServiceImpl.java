@@ -12,6 +12,7 @@ import com.appestados.service.CidadeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -85,35 +86,42 @@ public class CidadeServiceImpl implements CidadeService {
 
     }
 
-    public List<CidadeResponse> listarPorEstado(Integer idEstado){
+    public List<CidadeResponse> listarPorEstado(Integer idEstado, Boolean real){
         Optional<EstadoEntity> estadoEntity = estadoRepository.findById(idEstado);
         if(!estadoEntity.isPresent())
             throw  AppEstadosMessage.badRequest(AppEstadosMessage.ESTADO_INEXISTENTE, idEstado.toString());
 
         List<CidadeEntity> cidadeEntities = cidadeRepository.findByIdEstado(estadoEntity.get().getId());
 
-        List<CidadeResponse> cidadeResponses = cidadeEntities.stream().map(cidadeEntity -> calcularCustoPopulacional(cidadeEntity, false)).collect(Collectors.toList());
+        List<CidadeResponse> cidadeResponses = cidadeEntities.stream().map(cidadeEntity -> calcularCustoPopulacional(cidadeEntity, real)).collect(Collectors.toList());
 
         return cidadeResponses;
 
     }
 
     private CidadeResponse calcularCustoPopulacional (CidadeEntity cidadeEntity, Boolean custoEmReal){
+        Float custoPopulacional = null;
+
         List<ConfigEntity> configEntities = configRepository.findAll();
-        ConfigEntity configEntity = configEntities.stream().findFirst().get();
 
-        Float custoPopulacional = (cidadeEntity.getPopulacao() <= configEntity.getCorte())?
-                cidadeEntity.getPopulacao() * configEntity.getCustoOperacional() :
-                (configEntity.getCorte() * configEntity.getCustoOperacional()) + ((cidadeEntity.getPopulacao() - configEntity.getCorte())* (configEntity.getCustoOperacional()-(configEntity.getCustoOperacional()*configEntity.getDesconto()/100)));
+        if(configEntities != null && !configEntities.isEmpty()) {
+            ConfigEntity configEntity = configEntities.stream().findFirst().get();
 
 
-        Float custoPopulacionalReal = (custoEmReal)? null: null;
+             custoPopulacional = (cidadeEntity.getPopulacao() <= configEntity.getCorte()) ?
+                    cidadeEntity.getPopulacao() * configEntity.getCustoOperacional() :
+                    (configEntity.getCorte() * configEntity.getCustoOperacional()) + ((cidadeEntity.getPopulacao() - configEntity.getCorte()) * (configEntity.getCustoOperacional() - (configEntity.getCustoOperacional() * configEntity.getDesconto() / 100)));
+
+
+        }
+
+        Float custoPopulacionalReal = (custoEmReal && custoPopulacional != null)? custoPopulacional * 5.7F: null;
 
         return CidadeResponse.builder().id(cidadeEntity.getId())
                 .populacao(cidadeEntity.getPopulacao())
                 .nome(cidadeEntity.getNome())
-                .custoPopulacional(custoPopulacional)
-                .custoPopulacionalEmReal(custoPopulacionalReal)
+                .custoPopulacional((custoPopulacional != null )? custoPopulacional.longValue():null)
+                .custoPopulacionalEmReal((custoPopulacionalReal!=null)?custoPopulacionalReal.longValue():null)
                 .build();
     }
 

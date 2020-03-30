@@ -11,7 +11,8 @@ import java.sql.Blob;
 @AllArgsConstructor
 @Builder
 public class EstadoResponse {
-    private Integer id;
+
     private String nome;
-    private Blob bandeira;
+    private Long custoPopulacional;
+    private Long custoPopulacionalEmReal;
 }

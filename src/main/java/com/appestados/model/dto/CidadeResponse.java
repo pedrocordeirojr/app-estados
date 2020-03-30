@@ -4,6 +4,7 @@ import com.appestados.model.EstadoEntity;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -17,6 +18,6 @@ public class CidadeResponse {
     private String nome;
     private EstadoEntity estado;
     private Integer populacao;
-    private Float custoPopulacional;
-    private Float custoPopulacionalEmReal;
+    private Long custoPopulacional;
+    private Long custoPopulacionalEmReal;
 }

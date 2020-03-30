@@ -10,5 +10,5 @@ import java.util.List;
 public interface CidadeService {
     CidadeResponse incluir(CidadeEntity cidadeEntity);
     void excluir(Integer idCidade);
-    List<CidadeResponse> listarPorEstado(Integer idEstado);
+    List<CidadeResponse> listarPorEstado(Integer idEstado, Boolean real);
 }
