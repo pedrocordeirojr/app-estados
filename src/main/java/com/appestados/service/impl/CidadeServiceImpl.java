@@ -94,6 +94,7 @@ public class CidadeServiceImpl implements CidadeService {
         List<CidadeEntity> cidadeEntities = cidadeRepository.findByIdEstado(estadoEntity.get().getId());
 
         List<CidadeResponse> cidadeResponses = cidadeEntities.stream().map(cidadeEntity -> calcularCustoPopulacional(cidadeEntity, real)).collect(Collectors.toList());
+        cidadeResponses.forEach(cidadeResponse -> {cidadeResponse.setEstado(estadoEntity.get());});
 
         return cidadeResponses;
 

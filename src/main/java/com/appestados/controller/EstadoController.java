@@ -33,8 +33,8 @@ public class EstadoController {
     }
 
     @GetMapping("/{idEstado}/cidades")
-    public List<CidadeResponse> listarCidades(@PathVariable("idEstado") Integer idEstado){
-        return cidadeService.listarPorEstado(idEstado, false);
+    public List<CidadeResponse> listarCidades(@PathVariable("idEstado") String idEstado){
+        return cidadeService.listarPorEstado(Integer.valueOf(idEstado), false);
     }
 
 }
